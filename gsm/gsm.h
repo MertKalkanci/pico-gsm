@@ -5,7 +5,7 @@
 #include "pico/stdlib.h"
 #include <stdio.h>
 
-
+static int txPin, rxPin, dtrPin;
 
 void setup_gsm(int uart,int baudrate,int tx, int rx, int dtr); //SET DTR -1 IF YOU DONT WANT TO USE SLEEP FEATURE
 
