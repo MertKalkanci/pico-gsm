@@ -2,6 +2,7 @@
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
 #include "pico/stdlib.h"
+#include "hardware/uart.h"
 #include <stdio.h>
 
 #define UART_0 uart0
