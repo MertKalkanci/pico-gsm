@@ -4,29 +4,19 @@
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 #include <stdio.h>
+#include <string.h>
 
-#define UART_0 uart0
-#define UART_1 uart1
-
-static int txPin, rxPin, dtrPin;
+static int txPin, rxPin, dtrPin, uartInterface;
 
 void setup_gsm(int uart,int baudrate, int tx, int rx, int dtr)
 {
-    if (uart > 0)
-    {
-        uart_init(uart1, baudrate);
-    }
-    else
-    {
-        uart_init(uart0, baudrate);
-    }
+    uart_init(uart > 0 ? uart1 : uart0, baudrate);
 
     gpio_set_function(rx, GPIO_FUNC_UART);
     gpio_set_function(tx, GPIO_FUNC_UART);
 
-    txPin = tx;
-    rxPin = rx;
-    dtrPin = dtr;
+
+    uart_set_baudrate(uart > 0 ? uart1 : uart0, baudrate);
 
     if (dtrPin >= 0)
     {
@@ -36,6 +26,33 @@ void setup_gsm(int uart,int baudrate, int tx, int rx, int dtr)
     }
 
     sleep_ms(2000);
+
+    uart_puts(uart > 0 ? uart1 : uart0,"AT");
+
+    char status[2];
+
+    for (int i = 0; i < 2; i++)
+    {
+        if (uart_is_readable(uart > 0 ? uart1 : uart0))
+        {
+            status[i] = uart_getc(uart > 0 ? uart1 : uart0);
+        }
+    }
+
+    if(strcmp(status,"OK"))
+    { 
+        printf("Status: OK");
+    }
+    else
+    {
+        printf("Status: SIM WORKS BUT NOT OK CANT COMMUNICATE");
+    }
+
+
+    txPin = tx;
+    rxPin = rx;
+    dtrPin = dtr;
+    uartInterface = uart;
 }
 
 void disable_sleep()
