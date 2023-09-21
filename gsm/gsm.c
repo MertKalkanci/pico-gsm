@@ -27,5 +27,30 @@ void setup_gsm(int uart,int baudrate, int tx, int rx, int dtr)
     txPin = tx;
     rxPin = rx;
     dtrPin = dtr;
+
+    if (dtrPin >= 0)
+    {
+        gpio_init(dtrPin);
+        gpio_set_dir(dtrPin, GPIO_OUT);
+        gpio_put(dtrPin, false);
+    }
+
+    sleep_ms(2000);
+}
+
+void disable_sleep()
+{
+    if (dtrPin >= 0)
+    {
+        gpio_put(dtrPin, false);
+    }
+}
+void enable_sleep()
+{
+
+    if (dtrPin >= 0)
+    {
+        gpio_put(dtrPin, true);
+    }
 }
 
