@@ -1,6 +1,6 @@
 #include "gsm.h"
-#include "pico/uart.h"
-#include "pico/gpio.h"
+#include "hardware/uart.h"
+#include "hardware/gpio.h"
 #include "pico/stdlib.h"
 #include <stdio.h>
 
@@ -27,3 +27,4 @@ void setup_gsm(int uart,int baudrate, int tx, int rx, int dtr)
     rxPin = rx;
     dtrPin = dtr;
 }
+
