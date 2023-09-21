@@ -14,6 +14,6 @@ void enable_sleep();
 
 void get_request(char url[],char *result[]);
 
-void send_sms
+void send_sms(char num[], char message[]);
 
 #endif // !GSM_H
