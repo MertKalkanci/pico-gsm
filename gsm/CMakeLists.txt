@@ -7,5 +7,6 @@ target_sources(gsm
 target_link_libraries(gsm # link the libraries to the executable
 	INTERFACE
     	hardware_uart
+        hardware_gpio
     	pico_stdlib
     )

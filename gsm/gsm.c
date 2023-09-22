@@ -2,7 +2,6 @@
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
 #include "pico/stdlib.h"
-#include "hardware/uart.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -39,7 +38,7 @@ void setup_gsm(int uart,int baudrate, int tx, int rx, int dtr)
         }
     }
 
-    if(strcmp(status,"OK"))
+    if(strcmp(status,"OK") == 0)
     { 
         printf("Status: OK");
     }
