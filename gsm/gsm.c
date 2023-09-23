@@ -3,7 +3,9 @@
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 static int txPin, rxPin, dtrPin, uartInterface;
 
@@ -28,10 +30,10 @@ void setup_gsm(int uart,int baudrate, int tx, int rx, int dtr)
 
     uart_puts(uart > 0 ? uart1 : uart0,"AT");
 
-    int status;
-    uart_read_ok(&status);
+    char* status;
+    read_uart_gsm_message(status);
 
-    if (status)
+    if (status == "OK\r\n")
     {
         printf("STATUS OK");
     }
@@ -62,29 +64,54 @@ void enable_sleep()
     }
 }
 
-void get_request(char ip[], char* result[])
+
+
+void request_with_address(char address[], char req[], char* result[]) // make request with web address
+{
+    request(address, req, &result);
+}
+
+void request(char ip[],char request[], char* result[]) // make request with ip
 {
 //TCP CONNECTION
-    char *base = 'AT+CIPSTART="TCP","",80', *tcpCommand;
-    int location = 19; // starts from 1 not 0
+    char* tcpCommand = 'AT+CIPSTART="TCP","",80';
+
+    int locationTcpCommandInsert = 19; // starts from 1 not 0
     
-    insert_string(&tcpCommand, location, &base);
+    insert_string(tcpCommand, locationTcpCommandInsert, ip);
 
     uart_puts(uartInterface > 0 ? uart1 : uart0, tcpCommand);
 
-    int status;
-    uart_read_ok(&status);
+    char* status;
+    read_uart_gsm_message(status);
 
-    if (status)
+    if (status == "OK\r\n")
     {
-        printf("CTP CONNECTION SUCCESFUL");
+        printf("TCP CONNECTION SUCCESFUL");
     }
     else
     {
         printf("ERROR CANT CONNECT TCP");
-    }
 
-//endregion
+        return;
+    }
+    //SENDING REQUEST
+
+    int lengthOfRequest = sizeof(request) / sizeof(char);
+    int lengthToAddToTheRequestCommand = (int)((ceil(log10(lengthOfRequest)) + 1) * sizeof(char));
+
+    char* requestCommand = 'AT+CIPSEND=';
+
+    requestCommand = realloc(requestCommand, sizeof(requestCommand) + sizeof(char) * lengthToAddToTheRequestCommand);
+
+    char* requestLengthString;
+    sprintf(requestLengthString, "%d", 42);
+
+    strcat(requestCommand, requestLengthString);
+
+    uart_puts(uartInterface > 0 ? uart1 : uart0, requestCommand);
+    uart_puts(uartInterface > 0 ? uart1 : uart0, request);
+    read_uart_gsm_message(&result);
 }
 
 void insert_string(char* destination, int pos, char* insert)
@@ -100,28 +127,47 @@ void insert_string(char* destination, int pos, char* insert)
     free(strC);
 }
 
-
-void uart_read_ok(int* isOk)
+int gsm_uart_end_check(char message[])
 {
-    char* readed = malloc(sizeof(char)*2);
-    int index = 0;
-    while (index < 2)
+    int endLength = 2;
+    int lengthOfMessage = sizeof(message) / sizeof(char);
+    if (lengthOfMessage >= 2)
     {
-        if (uart_is_readable(uartInterface > 0 ? uart1 : uart0))
-        {
-            readed[index] = uart_getc(uartInterface > 0 ? uart1 : uart0);
-            index++;
-        }
-    } 
+        char* end = malloc(sizeof(char)*endLength);
 
-    if (strcmp(readed, "OK") == 0)
-    {
-        *isOk = 1;
+        for (int i = 0; i < endLength; i++)
+        {
+            end[i] = message[lengthOfMessage - endLength + i];
+        }
+        
+        free(end);
+        
+        return strcmp(end, "\r\n");
     }
     else
     {
-        *isOk = 0;
+        return 1;
     }
+}
 
-    free(readed);
+void read_uart_gsm_message(char* message[])
+{
+    char* internalMessage = malloc(sizeof(char));
+    int status = 1;
+
+    while (status != 0)
+    {
+        if (uart_is_readable(uartInterface > 0 ? uart1 : uart0))
+        {
+            char readedChar;
+            readedChar = uart_getc(uartInterface > 0 ? uart1 : uart0);
+
+            internalMessage = realloc(internalMessage,sizeof(internalMessage) + sizeof(char));
+
+            strcat(internalMessage, readedChar);
+        }
+        status = gsm_uart_end_check(internalMessage);
+    }
+    strcpy(message, internalMessage);
+    free(internalMessage);
 }
