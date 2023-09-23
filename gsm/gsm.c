@@ -64,8 +64,6 @@ void enable_sleep()
     }
 }
 
-
-
 void request_with_address(char address[], char req[], char* result[]) // make request with web address
 {
     request(address, req, &result);
