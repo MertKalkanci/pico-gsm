@@ -7,14 +7,14 @@
 #include <string.h>
 #include <math.h>
 
-static int txPin, rxPin, dtrPin, uartInterface;
+static int firstPin, secondPin, dtrPin, uartInterface;
 
-void setup_gsm(int uart,int baudrate, int tx, int rx, int dtr)
+void setup_gsm(int uart,int baudrate, int uartPinFirst, int uartPinSecond, int dtr)
 {
     uart_init(uart > 0 ? uart1 : uart0, baudrate);
 
-    gpio_set_function(rx, GPIO_FUNC_UART);
-    gpio_set_function(tx, GPIO_FUNC_UART);
+    gpio_set_function(uartPinFirst, GPIO_FUNC_UART);
+    gpio_set_function(uartPinSecond, GPIO_FUNC_UART);
 
 
     uart_set_baudrate(uart > 0 ? uart1 : uart0, baudrate);
@@ -42,8 +42,8 @@ void setup_gsm(int uart,int baudrate, int tx, int rx, int dtr)
         printf("STATUS NOT OK");
     }
 
-    txPin = tx;
-    rxPin = rx;
+    firstPin = uartPinFirst;
+    secondPin = uartPinSecond;
     dtrPin = dtr;
     uartInterface = uart;
 }
