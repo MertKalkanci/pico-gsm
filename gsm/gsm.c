@@ -90,12 +90,12 @@ void request(char address[],char request[], char* result[]) // make request with
     }
     //SENDING REQUEST
 
-    int lengthOfRequest = sizeof(request) / sizeof(char);
+    int lengthOfRequest = strlen(request);
     int lengthToAddToTheRequestCommand = (int)((ceil(log10(lengthOfRequest)) + 1) * sizeof(char));
 
     char* requestCommand = 'AT+CIPSEND=';
 
-    requestCommand = realloc(requestCommand, sizeof(requestCommand) + sizeof(char) * lengthToAddToTheRequestCommand);
+    requestCommand = realloc(requestCommand, strlen(requestCommand) * sizeof(char) + sizeof(char) * lengthToAddToTheRequestCommand);
 
     char* requestLengthString;
     sprintf(requestLengthString, "%d", 42);
@@ -126,7 +126,7 @@ int gsm_uart_end_check(char message[])
     int lengthOfMessage = sizeof(message) / sizeof(char);
     if (lengthOfMessage >= 2)
     {
-        char* end = malloc(sizeof(char)*endLength);
+        char* end = malloc(sizeof(char) * endLength);
 
         for (int i = 0; i < endLength; i++)
         {
@@ -145,7 +145,7 @@ int gsm_uart_end_check(char message[])
 
 void read_uart_gsm_message(char* message[])
 {
-    char* internalMessage = malloc(sizeof(char));
+    char* internalMessage = (char*)malloc(sizeof(char));
     int status = 1;
 
     while (status != 0)
@@ -155,7 +155,7 @@ void read_uart_gsm_message(char* message[])
             char readedChar;
             readedChar = uart_getc(uartInterface > 0 ? uart1 : uart0);
 
-            internalMessage = realloc(internalMessage,sizeof(internalMessage) + sizeof(char));
+            internalMessage = realloc(internalMessage,strlen(internalMessage) * sizeof(char) + sizeof(char));
 
             strcat(internalMessage, readedChar);
         }
@@ -163,4 +163,9 @@ void read_uart_gsm_message(char* message[])
     }
     strcpy(message, internalMessage);
     free(internalMessage);
+}
+
+int check_empty_string(char* result)
+{
+    return (sizeof(result) == sizeof(NULL) && sizeof(result) == sizeof(char)) ? 1 : 0;
 }
