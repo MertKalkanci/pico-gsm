@@ -8,7 +8,6 @@ void setup_gsm(int uart,int baudrate,int tx, int rx, int dtr); //SET DTR -1 IF Y
 void disable_sleep();
 void enable_sleep();
 
-void request_with_address(char address[], char req[], char* result[]);
 void request(char ip[], char request[], char* result[]);
 
 void send_sms(char num[], char message[]);

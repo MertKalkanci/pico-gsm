@@ -64,19 +64,14 @@ void enable_sleep()
     }
 }
 
-void request_with_address(char address[], char req[], char* result[]) // make request with web address
-{
-    request(address, req, &result);
-}
-
-void request(char ip[],char request[], char* result[]) // make request with ip
+void request(char address[],char request[], char* result[]) // make request with ip
 {
 //TCP CONNECTION
     char* tcpCommand = 'AT+CIPSTART="TCP","",80';
 
     int locationTcpCommandInsert = 19; // starts from 1 not 0
     
-    insert_string(tcpCommand, locationTcpCommandInsert, ip);
+    insert_string(tcpCommand, locationTcpCommandInsert, address);
 
     uart_puts(uartInterface > 0 ? uart1 : uart0, tcpCommand);
 
