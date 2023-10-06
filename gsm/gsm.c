@@ -126,14 +126,12 @@ int gsm_uart_end_check(char message[])
     int lengthOfMessage = sizeof(message) / sizeof(char);
     if (lengthOfMessage >= 2)
     {
-        char* end = malloc(sizeof(char) * endLength);
+        char* end[2] = "00";
 
         for (int i = 0; i < endLength; i++)
         {
             end[i] = message[lengthOfMessage - endLength + i];
         }
-        
-        free(end);
         
         return strcmp(end, "\r\n");
     }
