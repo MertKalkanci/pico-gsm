@@ -28,7 +28,7 @@ void request_sample()
 	char* result;
 	request(sampleWebsite, sampleRequest, result);
 
-	printf("REQUEST RESULT:\n");
+	printf("REQUEST RESULT:\n\n");
 
 	if (check_empty_string(result) != 1) // MAKE SURE TO CHECK IS POINTER CHANGED
 	{
