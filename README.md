@@ -1,7 +1,7 @@
 # pico-gsm
 A gsm library using uart interface, used in Akasu web &amp; AI integrated irrigation project akasulama.com
 
-# LIBRARY ISN'T TESTED YET
+# This library is discontinued
 
 # How to Use Samples
 
